@@ -1,0 +1,6 @@
+plugins {
+    id 'com.github.jmongard.git-semver-plugin' version '0.3.1'
+}
+
+//Set the version for the current project:
+version = semver.version

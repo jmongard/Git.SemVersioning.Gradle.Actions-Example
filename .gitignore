@@ -1,0 +1,21 @@
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+/out/
+/schema/
+
+# Eclipse
+.classpath
+.project
+.settings/
+/bin
+
+# Intellij
+.idea/
+*.iml
+*.iws
+/logs/*.gz
+/logs/*.log
+/.apt_generated/
+/.apt_generated_tests/
+/.factorypath
