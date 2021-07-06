@@ -28,3 +28,15 @@ jobs:
       - name: Retrieve updated version number
         run: ./gradlew printVersion
 
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          
+      - name: Retrieve current version number to publish
+        run: |
+          ./gradlew printVersion
