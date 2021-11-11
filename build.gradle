@@ -1,6 +1,11 @@
 plugins {
-    id 'com.github.jmongard.git-semver-plugin' version '0.3.1'
+    id 'com.github.jmongard.git-semver-plugin' version '0.4.2'
 }
 
-//Set the version for the current project:
+semver {
+	defaultPreRelease = "snapshot"
+	minorPattern = "^(\\s?)feat(?:\\(\\w+\\))?:"
+	patchPattern = "^(\\s?)fix(?:\\(\\w+\\))?:"
+}
+
 version = semver.version
