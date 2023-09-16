@@ -8,35 +8,60 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    outputs:
+      version: ${{ steps.printVersionStep.outputs.version }}
+      changeLog: ${{ steps.printChangeLogStep.outputs.changeLog }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-    
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradlew-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradlew-
+
       - name: Retrieve current version number
         run: ./gradlew printVersion
 
       - name: Update release
         run: |
-          ./gradlew releaseVersion --no-commit printChangeLog
+          ./gradlew releaseVersion --no-commit
 
       - name: Push changes
         run: |
           git push origin --tags
 
       - name: Retrieve updated version number
-        run: ./gradlew printVersion
+        id: printVersionStep
+        run: echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
+
+      - name: Change log
+        id: printChangeLogStep
+        run: |
+          {
+            echo 'changeLog<<EOF'
+            ./gradlew -q printChangeLog
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
   publish:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
-      - name: Retrieve current version number to publish
+      - env:
+          VERSION: ${{needs.build.outputs.version}}
+          CHANGE_LOG: ${{needs.build.outputs.changeLog}}
         run: |
-          ./gradlew printVersion
+          gh release create -d $VERSION -F - << echo $CHANGE_LOG
+
