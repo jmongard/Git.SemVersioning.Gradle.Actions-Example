@@ -38,10 +38,11 @@ jobs:
 
       - name: Push changes
         run: |
-          git push origin --tags
+          git push origin ${{ steps.createRelease.outputs.version }}
 
       - name: Create GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-           ./gradlew -q printChangeLog | gh release create -d ${{ steps.createRelease.outputs.version }} -F -
+          version="${{ steps.createRelease.outputs.version }}"
+           ./gradlew -q printChangeLog | gh release create -d $version -t "Example Project $version" -F -
