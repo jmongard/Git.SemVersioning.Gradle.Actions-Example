@@ -41,11 +41,6 @@ jobs:
         run: |
           git push origin --tags
 
-      - name: Print changelog and version
-        run: |
-          ./gradlew -q printVersion
-          ./gradlew -q printChangeLog
-
       - name: Output version number
         id: printVersionStep
         run: echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
@@ -58,6 +53,11 @@ jobs:
             ./gradlew -q printChangeLog
             echo EOF
           } >> "$GITHUB_OUTPUT"
+
+      - name: Print changelog and version
+        run: |
+          echo "Release notes ${{ steps.printVersionStep.outputs.version }}"
+          echo "${{ steps.printChangeLogStep.outputs.changeLog }}"
 
   publish:
     needs: build
