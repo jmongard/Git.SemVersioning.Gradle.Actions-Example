@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.printVersionStep.outputs.version }}
-      changeLog: ${{ steps.printChangeLogStep.outputs.changeLog }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -33,7 +30,8 @@ jobs:
       - name: Retrieve current version number before release
         run: ./gradlew printVersion
 
-      - name: Update release
+      - name: Create release tag
+        id: createRelease
         run: |
           ./gradlew releaseVersion --no-commit
           echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
@@ -45,4 +43,4 @@ jobs:
       - name: Create GitHub release
         id: printChangeLogStep
         run: |
-           ./gradlew -q printChangeLog | gh release create -d ${{ steps.printVersionStep.outputs.version }} -F -
+           ./gradlew -q printChangeLog | gh release create -d ${{ steps.createRelease.outputs.version }} -F -
