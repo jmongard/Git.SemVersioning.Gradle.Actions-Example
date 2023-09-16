@@ -66,6 +66,8 @@ jobs:
         run: |
           echo $CHANGE_LOG
 
+      - uses: actions/checkout@v3
+
       - name: Create release
         env:
           VERSION: ${{needs.build.outputs.version}}
