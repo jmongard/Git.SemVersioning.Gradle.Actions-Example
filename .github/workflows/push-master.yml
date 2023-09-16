@@ -30,7 +30,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradlew-
 
-      - name: Retrieve current version number
+      - name: Retrieve current version number before release
         run: ./gradlew printVersion
 
       - name: Update release
@@ -62,6 +62,7 @@ jobs:
       - env:
           VERSION: ${{needs.build.outputs.version}}
           CHANGE_LOG: ${{needs.build.outputs.changeLog}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create -d $VERSION -F - << echo $CHANGE_LOG
+          echo $CHANGE_LOG | gh release create -d $VERSION -F -
 
