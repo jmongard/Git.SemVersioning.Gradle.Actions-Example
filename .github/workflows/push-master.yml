@@ -41,11 +41,16 @@ jobs:
         run: |
           git push origin --tags
 
-      - name: Retrieve updated version number
+      - name: Print changelog and version
+        run: |
+          ./gradlew -q printVersion
+          ./gradlew -q printChangeLog
+
+      - name: Output version number
         id: printVersionStep
         run: echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
 
-      - name: Change log
+      - name: Output change log
         id: printChangeLogStep
         run: |
           {
