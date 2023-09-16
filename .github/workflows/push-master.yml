@@ -33,7 +33,7 @@ jobs:
       - name: Create release tag
         id: createRelease
         run: |
-          ./gradlew releaseVersion --no-commit
+          ./gradlew build releaseVersion --no-commit
           echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
 
       - name: Push changes
@@ -41,6 +41,7 @@ jobs:
           git push origin --tags
 
       - name: Create GitHub release
-        id: printChangeLogStep
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
            ./gradlew -q printChangeLog | gh release create -d ${{ steps.createRelease.outputs.version }} -F -
