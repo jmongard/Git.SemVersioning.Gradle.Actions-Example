@@ -36,48 +36,13 @@ jobs:
       - name: Update release
         run: |
           ./gradlew releaseVersion --no-commit
+          echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
 
       - name: Push changes
         run: |
           git push origin --tags
 
-      - name: Output version number
-        id: printVersionStep
-        run: echo "version=$(./gradlew -q printVersion)" >> $GITHUB_OUTPUT
-
-      - name: Output change log
+      - name: Create GitHub release
         id: printChangeLogStep
         run: |
-          {
-            echo 'changeLog<<EOF'
-            ./gradlew -q printChangeLog
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Print changelog and version
-        run: |
-          echo "Release notes ${{ steps.printVersionStep.outputs.version }}"
-          echo "${{ steps.printChangeLogStep.outputs.changeLog }}"
-
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Print changelog
-        env:
-          VERSION: ${{needs.build.outputs.version}}
-          CHANGE_LOG: ${{needs.build.outputs.changeLog}}
-        run: |
-          echo $CHANGE_LOG
-
-      - uses: actions/checkout@v3
-
-      - name: Create release
-        env:
-          VERSION: ${{needs.build.outputs.version}}
-          CHANGE_LOG: ${{needs.build.outputs.changeLog}}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo $CHANGE_LOG | gh release create -d $VERSION -F -
-
+           ./gradlew -q printChangeLog | gh release create -d ${{ steps.printVersionStep.outputs.version }} -F -
