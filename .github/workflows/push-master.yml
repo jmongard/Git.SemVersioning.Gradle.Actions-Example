@@ -59,7 +59,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - env:
+      - name: Print changelog
+        env:
+          VERSION: ${{needs.build.outputs.version}}
+          CHANGE_LOG: ${{needs.build.outputs.changeLog}}
+        run: |
+          echo $CHANGE_LOG
+
+      - name: Create release
+        env:
           VERSION: ${{needs.build.outputs.version}}
           CHANGE_LOG: ${{needs.build.outputs.changeLog}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
