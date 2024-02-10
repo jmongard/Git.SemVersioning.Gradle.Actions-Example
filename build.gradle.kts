@@ -5,7 +5,7 @@
  */
 
 plugins {
-    id("com.github.jmongard.git-semver-plugin") version "0.6.4"
+    id("com.github.jmongard.git-semver-plugin") version "0.12.2"
 }
 
 val ver = semver.version;
